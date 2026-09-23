@@ -117,8 +117,8 @@ Loading the full file takes about two seconds and 420 MB. Finding the candidates
 3. Merges the shards (`npm run merge-splits`) and releases `splits.br`, `splits-meta.json` and `stations.json` as
    `splits-YYYY-MM-DD`. The last 30 releases and the first of each month are kept.
 
-It needs the `DTD_USERNAME`, `DTD_PASSWORD` and `DTD_HOSTNAME` secrets for the feeds, and `AWS_ACCESS_KEY_ID`,
-`AWS_SECRET_ACCESS_KEY` and `AWS_REGION` for the bucket.
+It needs the `DTD_USERNAME`, `DTD_PASSWORD` and `DTD_HOSTNAME` secrets for the feeds, and `AWS_ACCESS_KEY_ID` and
+`AWS_SECRET_ACCESS_KEY` for the bucket, which is in `eu-west-2`.
 
 `.github/workflows/pages.yml` then builds `site/` with the latest release copied in and deploys it to GitHub Pages.
 A page cannot fetch a release asset itself, as they are served without CORS headers. The site reads the whole split
