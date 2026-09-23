@@ -33,7 +33,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "@gb-transit/fares-source": "^0.1.0",
-    "@gb-transit/knowledgebase-fare-group-permitted-stations": "^1.0.0",
+    "@gb-transit/knowledgebase-fare-group-permitted-stations": "^1.0.1",
     "@gb-transit/routeing-source": "^0.1.0",
     "least-weight-subsequence": "^1.0.0"
   },
