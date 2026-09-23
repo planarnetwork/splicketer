@@ -27,7 +27,7 @@ env:
 jobs:
   feeds:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 75
     outputs:
       date: ${{ steps.date.outputs.date }}
       shards: ${{ steps.shards.outputs.shards }}
@@ -59,8 +59,8 @@ jobs:
             exit 1
           fi
 
-      # dtd2mysql's SFTP pool is never closed, so each download is given a time limit and the files are checked for
-      # rather than trusting the exit code
+      # the SFTP server is slow, 10 minutes for the timetable, and a download cut short leaves part of a zip, so the
+      # zips are tested rather than trusting the exit code
       - name: Download the DTD feeds
         env:
           SFTP_HOSTNAME: ${{ secrets.DTD_HOSTNAME }}
@@ -69,11 +69,15 @@ jobs:
         run: |
           mkdir -p data/feeds
           for feed in fares timetable routeing; do
-            timeout 900 npx -y dtd2mysql@11 --download-$feed data/feeds/ || true
+            timeout 1200 npx -y dtd2mysql@11 --download-$feed data/feeds/ || true
           done
           ls -la data/feeds
           for prefix in RJFAF RJTTF RJRG; do
             ls data/feeds/$prefix* > /dev/null || { echo "::error::No $prefix feed downloaded"; exit 1; }
+          done
+          for zip in data/feeds/*.ZIP data/feeds/*.zip; do
+            [ -e "$zip" ] || continue
+            unzip -tqq "$zip" || { echo "::error::$zip is incomplete"; exit 1; }
           done
 
       - name: Download the fare group permitted stations
