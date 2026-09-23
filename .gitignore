@@ -5,5 +5,5 @@ dist/
 out/
 
 .env
-docs/
-data/
+/docs/
+/data/
