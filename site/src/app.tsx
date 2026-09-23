@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { type CategorySplit, Splits } from "./data/splits";
 import { Stations } from "./data/stations";
 import { MapView } from "./components/mapView";
@@ -67,8 +67,10 @@ export function App() {
     return () => opened.close();
   }, []);
 
-  const search = async () => {
-    if (stations === undefined || splits === undefined || loading.state !== "ready") {
+  const lookedUp = useRef<string | undefined>(undefined);
+
+  const search = () => {
+    if (stations === undefined) {
       return;
     }
 
@@ -87,12 +89,24 @@ export function App() {
     setMessage(undefined);
     setFrom(stations.label(origin.code));
     setTo(stations.label(destination.code));
-
-    const found = await splits.query(origin.code, destination.code);
-
-    setQuery({origin: origin.code, destination: destination.code, splits: found});
-    setSelected(found.find(result => result.split !== undefined)?.category);
   };
+
+  // look up once both stations are chosen, from the suggestions or by pressing enter, and the splits are read
+  useEffect(() => {
+    const origin = stations?.chosen(from)?.code;
+    const destination = stations?.chosen(to)?.code;
+
+    if (splits === undefined || loading.state !== "ready" || origin === undefined || destination === undefined
+      || origin === destination || lookedUp.current === `${origin}${destination}`) {
+      return;
+    }
+
+    lookedUp.current = `${origin}${destination}`;
+    splits.query(origin, destination).then(found => {
+      setQuery({origin, destination, splits: found});
+      setSelected(found.find(result => result.split !== undefined)?.category);
+    });
+  }, [from, to, stations, splits, loading.state]);
 
   const path = useMemo(() => {
     const chosen = query?.splits.find(result => result.category === selected)?.split;

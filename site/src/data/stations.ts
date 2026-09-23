@@ -70,9 +70,16 @@ export class Stations {
    * The station a field names: a label, a code or a name that matches one station best
    */
   public resolve(text: string): Station | undefined {
+    return this.chosen(text) ?? this.at(text.trim().toUpperCase()) ?? this.match(text, 1)[0];
+  }
+
+  /**
+   * The station a field names with its label, as it does once a suggestion is chosen
+   */
+  public chosen(text: string): Station | undefined {
     const label = /\(([A-Z0-9]{3})\)\s*$/.exec(text.trim());
 
-    return this.at(label?.[1] ?? text.trim().toUpperCase()) ?? this.match(text, 1)[0];
+    return label === null ? undefined : this.at(label[1]);
   }
 
 }
