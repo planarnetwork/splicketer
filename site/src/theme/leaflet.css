@@ -1,0 +1,37 @@
+/* Leaflet's own classes are global, so its theming lives outside CSS Modules. */
+.leaflet-tile-pane {
+  filter: var(--map-filter);
+}
+
+.leaflet-container {
+  background: var(--bg);
+  font-family: var(--mono);
+}
+
+.leaflet-control-attribution {
+  background: color-mix(in oklab, var(--panel) 82%, transparent) !important;
+  color: var(--dimmer) !important;
+  font-size: 9px !important;
+}
+
+.leaflet-control-attribution a {
+  color: var(--dim) !important;
+}
+
+.leaflet-bar a {
+  background: var(--panel2) !important;
+  color: var(--fg) !important;
+  border-color: var(--line) !important;
+}
+
+.leaflet-tooltip {
+  background: var(--panel2);
+  border: 1px solid var(--line2);
+  color: var(--fg);
+  box-shadow: none;
+  font-size: 10px;
+}
+
+.leaflet-tooltip-top::before {
+  border-top-color: var(--line2);
+}

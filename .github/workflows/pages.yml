@@ -1,0 +1,60 @@
+name: Website
+
+# The site is served from GitHub Pages with the latest release's files copied into it: a page cannot fetch a release
+# asset itself, as they are served without CORS headers.
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'site/**'
+      - 'src/query/**'
+      - 'src/output/SplitFormat.ts'
+      - '.github/workflows/pages.yml'
+  workflow_run:
+    workflows: ['Daily splits']
+    types: [completed]
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '26'
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Copy in the latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download --repo "${{ github.repository }}" \
+            --pattern splits.br --pattern splits-meta.json --pattern stations.json \
+            --dir site/public --clobber
+
+      - run: npm ci --prefix site
+      - run: npm run build --prefix site
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/dist
+      - id: deployment
+        uses: actions/deploy-pages@v4

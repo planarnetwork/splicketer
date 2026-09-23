@@ -1,0 +1,5 @@
+node_modules/
+dist/
+public/splits.br
+public/stations.json
+public/splits-meta.json

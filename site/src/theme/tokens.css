@@ -1,0 +1,52 @@
+/* Design tokens, from the journey planning comparison site */
+:root {
+  --bg: #0b0d10;
+  --panel: #11141a;
+  --panel2: #161b22;
+  --line: #222a34;
+  --line2: #2c3642;
+  --fg: #dbe2ea;
+  --dim: #7d8896;
+  --dimmer: #5a6472;
+  --acc: #8ab4ff;
+  --good: #7fd49b;
+  --map-filter: invert(1) hue-rotate(180deg) saturate(0.35) brightness(0.82) contrast(1.05);
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --sans: "IBM Plex Sans", system-ui, sans-serif;
+}
+
+body[data-theme="light"] {
+  --bg: #eceae5;
+  --panel: #f7f6f3;
+  --panel2: #fffefb;
+  --line: #d6d2ca;
+  --line2: #c2bdb2;
+  --fg: #1b1e22;
+  --dim: #61686f;
+  --dimmer: #8d949b;
+  --acc: #1f5fbf;
+  --good: #1f7a3f;
+  --map-filter: saturate(0.28) brightness(1.02) contrast(0.95);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 400 13px / 1.45 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--acc);
+}

@@ -1,0 +1,47 @@
+{
+  "name": "splicketer",
+  "version": "0.1.0",
+  "description": "Precompute where split tickets can beat a through fare on the GB rail network",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "npm run lint && npm run typecheck && vitest run",
+    "watch-test": "vitest",
+    "lint": "biome lint src/ test/",
+    "typecheck": "tsc --noEmit -p ./",
+    "build": "rm -rf ./dist/ && tsc -p tsconfig.build.json",
+    "splits": "NODE_OPTIONS='--max-old-space-size=16000' tsx src/cli/build-splits.ts",
+    "perf": "NODE_OPTIONS='--max-old-space-size=4000' tsx test/performance.ts",
+    "download-permitted-stations": "scripts/download-permitted-stations.sh",
+    "merge-splits": "tsx src/cli/merge-splits.ts",
+    "stations": "tsx src/cli/stations.ts"
+  },
+  "author": "Linus Norton <linusnorton@gmail.com>",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "@gb-transit/fares-source": "^0.1.0",
+    "@gb-transit/knowledgebase-fare-group-permitted-stations": "^1.0.0",
+    "@gb-transit/routeing-source": "^0.1.0",
+    "least-weight-subsequence": "^1.0.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.12",
+    "@types/node": "26.5.0",
+    "tsx": "^4.23.13",
+    "typescript": "7.0.2",
+    "vitest": "^5.0.0"
+  }
+}

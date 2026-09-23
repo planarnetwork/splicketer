@@ -1,0 +1,193 @@
+name: Daily splits
+
+# Download the fares, routeing guide and timetable, find every split ticket and release them. The search is split
+# across shards: the whole network is several CPU hours, and a runner has four cores.
+
+on:
+  schedule:
+    # after the DTD feeds are published, and after gb-transit's nightly feed
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Release the result
+        type: boolean
+        default: true
+
+concurrency:
+  group: daily-splits
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  SHARDS: 16
+
+jobs:
+  feeds:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    outputs:
+      date: ${{ steps.date.outputs.date }}
+      shards: ${{ steps.shards.outputs.shards }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '26'
+
+      - id: date
+        run: echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+
+      - id: shards
+        run: echo "shards=$(jq -cn --argjson n "$SHARDS" '[range(1; $n + 1)]')" >> "$GITHUB_OUTPUT"
+
+      - name: Fail fast without credentials
+        env:
+          DTD_USERNAME: ${{ secrets.DTD_USERNAME }}
+          DTD_PASSWORD: ${{ secrets.DTD_PASSWORD }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        run: |
+          missing=""
+          [ -n "$DTD_USERNAME" ] || missing="$missing DTD_USERNAME"
+          [ -n "$DTD_PASSWORD" ] || missing="$missing DTD_PASSWORD"
+          [ -n "$AWS_ACCESS_KEY_ID" ] || missing="$missing AWS_ACCESS_KEY_ID"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing secrets:$missing"
+            exit 1
+          fi
+
+      # dtd2mysql's SFTP pool is never closed, so each download is given a time limit and the files are checked for
+      # rather than trusting the exit code
+      - name: Download the DTD feeds
+        env:
+          SFTP_HOSTNAME: ${{ secrets.DTD_HOSTNAME }}
+          SFTP_USERNAME: ${{ secrets.DTD_USERNAME }}
+          SFTP_PASSWORD: ${{ secrets.DTD_PASSWORD }}
+        run: |
+          mkdir -p data/feeds
+          for feed in fares timetable routeing; do
+            timeout 900 npx -y dtd2mysql@11 --download-$feed data/feeds/ || true
+          done
+          ls -la data/feeds
+          for prefix in RJFAF RJTTF RJRG; do
+            ls data/feeds/$prefix* > /dev/null || { echo "::error::No $prefix feed downloaded"; exit 1; }
+          done
+
+      - name: Download the fare group permitted stations
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+        run: scripts/download-permitted-stations.sh data/feeds
+
+      # station names and coordinates for the website, from gb-transit's latest feed
+      - name: Download the GTFS feed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release download --repo planarnetwork/gb-transit --pattern gtfs.zip --dir data
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: feeds
+          path: data
+          retention-days: 1
+
+  shard:
+    needs: feeds
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: true
+      matrix:
+        shard: ${{ fromJSON(needs.feeds.outputs.shards) }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '26'
+          cache: npm
+
+      - run: npm ci
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: feeds
+          path: data
+
+      - name: Find the splits from this shard's origins
+        env:
+          WORKERS: 4
+        run: >
+          npm run splits -- data/feeds shard-${{ matrix.shard }}.br
+          --date=${{ needs.feeds.outputs.date }}
+          --shard=${{ matrix.shard }}/${{ env.SHARDS }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shard-${{ matrix.shard }}
+          path: shard-${{ matrix.shard }}.br
+          retention-days: 1
+
+  release:
+    needs: [feeds, shard]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '26'
+          cache: npm
+
+      - run: npm ci
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: shard-*
+          merge-multiple: true
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: feeds
+          path: data
+
+      # the shards must be joined in the order of their origins, which is the order of their numbers
+      - name: Merge the shards
+        run: |
+          npm run merge-splits -- splits.br $(seq -f 'shard-%g.br' 1 "$SHARDS") \
+            --meta=splits-meta.json --date=${{ needs.feeds.outputs.date }}
+          cat splits-meta.json
+
+      - name: Write the stations
+        run: npm run stations -- data/gtfs.zip stations.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: splits
+          path: |
+            splits.br
+            splits-meta.json
+            stations.json
+          retention-days: 14
+
+      - name: Release
+        if: github.event_name == 'schedule' || inputs.publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="splits-${{ needs.feeds.outputs.date }}"
+          gh release delete "$tag" --yes --cleanup-tag 2>/dev/null || true
+          gh release create "$tag" --title "Splits ${{ needs.feeds.outputs.date }}" \
+            --notes "Split tickets for fares valid on ${{ needs.feeds.outputs.date }}. See the README for the format." \
+            splits.br splits-meta.json stations.json
+
+      - name: Prune old releases
+        if: github.event_name == 'schedule' || inputs.publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/prune-releases.mjs
