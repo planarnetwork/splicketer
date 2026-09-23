@@ -1,5 +1,5 @@
 /// <reference lib="webworker" />
-import { SplitRepository } from "../../../src/query/SplitRepository";
+import { SplitRepository } from "../../../src/query/splitRepository";
 import { readable } from "./brotli";
 import type { SplitsRequest, SplitsResponse } from "./protocol";
 

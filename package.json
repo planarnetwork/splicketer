@@ -23,10 +23,10 @@
     "lint": "biome lint src/ test/",
     "typecheck": "tsc --noEmit -p ./",
     "build": "rm -rf ./dist/ && tsc -p tsconfig.build.json",
-    "splits": "NODE_OPTIONS='--max-old-space-size=16000' tsx src/cli/build-splits.ts",
+    "splits": "NODE_OPTIONS='--max-old-space-size=16000' tsx src/cli/buildSplits.ts",
     "perf": "NODE_OPTIONS='--max-old-space-size=4000' tsx test/performance.ts",
     "download-permitted-stations": "scripts/download-permitted-stations.sh",
-    "merge-splits": "tsx src/cli/merge-splits.ts",
+    "merge-splits": "tsx src/cli/mergeSplits.ts",
     "stations": "tsx src/cli/stations.ts"
   },
   "author": "Linus Norton <linusnorton@gmail.com>",

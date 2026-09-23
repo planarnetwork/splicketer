@@ -1,6 +1,6 @@
 import * as fs from "node:fs";
 import * as zlib from "node:zlib";
-import { SplitRepository } from "./SplitRepository.js";
+import { SplitRepository } from "./splitRepository.js";
 
 /**
  * Load a split file from disk, brotli or gzip compressed according to its name, or plain text

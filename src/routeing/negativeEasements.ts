@@ -1,6 +1,6 @@
 import { ZipFile } from "@gb-transit/fares-source";
 import type { RouteingNetwork } from "@gb-transit/routeing-source";
-import { ANY_PERMITTED_ROUTES } from "../fares/FareIndex.js";
+import { ANY_PERMITTED_ROUTES } from "../fares/fareIndex.js";
 
 /**
  * A negative easement of the routeing guide: journeys between a station at one end and a station at the other may not

@@ -1,4 +1,4 @@
-import type { Split } from "../../../src/query/SplitRepository";
+import type { Split } from "../../../src/query/splitRepository";
 
 export type SplitsRequest =
   | {type: "load", url: string}

@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { Stations } from "../data/stations";
-import styles from "./StationInput.module.css";
+import styles from "./stationInput.module.css";
 
 interface StationInputProps {
   title: string;

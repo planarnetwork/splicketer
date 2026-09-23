@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { planSplits, planSplitsAsync, splitCandidates } from "./SplitQuery.js";
-import { SplitRepository } from "./SplitRepository.js";
+import { planSplits, planSplitsAsync, splitCandidates } from "./splitQuery.js";
+import { SplitRepository } from "./splitRepository.js";
 
 const repository = SplitRepository.fromLines([
   "#ANY-S 00000",

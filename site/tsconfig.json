@@ -11,5 +11,5 @@
     "noEmit": true,
     "types": ["vite/client"]
   },
-  "include": ["src", "../src/query/SplitRepository.ts", "../src/output/SplitFormat.ts"]
+  "include": ["src", "../src/query/splitRepository.ts", "../src/output/splitFormat.ts"]
 }

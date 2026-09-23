@@ -1,7 +1,7 @@
 import { leastWeightSubsequence, NoPathError, type Segment } from "least-weight-subsequence";
 import { leastWeightSubsequenceAsync } from "least-weight-subsequence/async";
-import { ANY_PERMITTED } from "../fares/FareIndex.js";
-import type { SplitRepository } from "./SplitRepository.js";
+import { ANY_PERMITTED } from "../fares/fareIndex.js";
+import type { SplitRepository } from "./splitRepository.js";
 
 /**
  * The fare for a ticket between two stations that is valid for the route: any permitted or specific to that route.

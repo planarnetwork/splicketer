@@ -9,7 +9,7 @@ on:
     paths:
       - 'site/**'
       - 'src/query/**'
-      - 'src/output/SplitFormat.ts'
+      - 'src/output/splitFormat.ts'
       - '.github/workflows/pages.yml'
   workflow_run:
     workflows: ['Daily splits']

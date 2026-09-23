@@ -1,7 +1,7 @@
 import type { FaresData } from "@gb-transit/fares-source";
 import type { PermittedStations } from "@gb-transit/knowledgebase-fare-group-permitted-stations";
-import { ADDITIONAL_LOCATIONS, LONDON_ZONE_LOCATIONS } from "./AdditionalLocations.js";
-import { CATEGORIES, categoryOf, NO_CATEGORY } from "./Category.js";
+import { ADDITIONAL_LOCATIONS, LONDON_ZONE_LOCATIONS } from "./additionalLocations.js";
+import { CATEGORIES, categoryOf, NO_CATEGORY } from "./category.js";
 
 export const NO_PRICE = 0xffffffff;
 export const ANY_PERMITTED = "00000";
@@ -28,6 +28,8 @@ export interface FareIndex {
   readonly routes: readonly string[];
   /** 1 for each route ID treated as any permitted */
   readonly anyPermitted: Uint8Array;
+  /** NLC or cluster ID of each location */
+  readonly locations: readonly string[];
   readonly locationCount: number;
   readonly categoryCount: number;
 
@@ -111,7 +113,11 @@ export function buildFareIndex(data: FaresData, permittedStations: readonly Perm
   const clusterIds = new Set(data.stationClusters.map(c => locationId(c.clusterId)));
   const clusterPairs = data.stationClusters.map(c => [locationId(c.nlc), locationId(c.clusterId)] as const);
 
-  const routes = data.codes.routes.values.slice();
+  // a non-derivable fare can be on a route no flow is on, and still be a fare
+  const routes = [...new Set([
+    ...data.codes.routes.values,
+    ...data.nonDerivableFares.flatMap(fare => (fare.route === null ? [] : [fare.route]))
+  ])];
 
   const nfoRows = nonDerivableRows(data, locationId, routes);
   const locationCount = locationIds.size;
@@ -134,6 +140,7 @@ export function buildFareIndex(data: FaresData, permittedStations: readonly Perm
     stations,
     routes,
     anyPermitted: Uint8Array.from(routes, route => (ANY_PERMITTED_ROUTES.includes(route) ? 1 : 0)),
+    locations: [...locationIds.keys()],
     locationCount,
     categoryCount: CATEGORIES.length,
     queryOffsets: queryIndex.offsets,

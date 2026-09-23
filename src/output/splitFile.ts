@@ -2,7 +2,7 @@ import * as fs from "node:fs";
 import { once } from "node:events";
 import { finished } from "node:stream/promises";
 import * as zlib from "node:zlib";
-import { BROTLI_QUALITY, BROTLI_WINDOW_BITS, compressionFor, FrontCoder, ROUTE_SEPARATOR, SECTION } from "./SplitFormat.js";
+import { BROTLI_QUALITY, BROTLI_WINDOW_BITS, compressionFor, FrontCoder, ROUTE_SEPARATOR, SECTION } from "./splitFormat.js";
 
 /**
  * The split journeys of one category on one route, as blocks of front coded lines in the order they are to be written

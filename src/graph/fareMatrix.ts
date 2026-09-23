@@ -1,6 +1,6 @@
-import type { FareIndex } from "../fares/FareIndex.js";
-import { NO_PRICE } from "../fares/FareIndex.js";
-import { EdgeBuilder } from "./EdgeBuilder.js";
+import type { FareIndex } from "../fares/fareIndex.js";
+import { NO_PRICE } from "../fares/fareIndex.js";
+import { EdgeBuilder } from "./edgeBuilder.js";
 
 /**
  * The route specific fares of one category that are cheaper than the any permitted fare, grouped by route and then by

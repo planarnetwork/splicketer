@@ -2,9 +2,9 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { codeBlock, writeSplitFile } from "../output/SplitFile.js";
+import { codeBlock, writeSplitFile } from "../output/splitFile.js";
 import { loadSplitFile } from "./loadSplitFile.js";
-import type { SplitRepository } from "./SplitRepository.js";
+import type { SplitRepository } from "./splitRepository.js";
 
 describe("SplitRepository", () => {
   let directory: string;

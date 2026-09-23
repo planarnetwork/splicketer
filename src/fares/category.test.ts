@@ -1,6 +1,6 @@
 import type { TicketType } from "@gb-transit/fares-source";
 import { describe, expect, it } from "vitest";
-import { CATEGORIES, categoryOf, NO_CATEGORY } from "./Category.js";
+import { CATEGORIES, categoryOf, NO_CATEGORY } from "./category.js";
 
 function ticket(description: string, ticketType = "S", overrides: Partial<TicketType> = {}): TicketType {
   return {

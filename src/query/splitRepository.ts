@@ -1,4 +1,4 @@
-import { CODE_WIDTH, NONE_SHARED, PRICE_SEPARATOR, ROUTE_SEPARATOR, SECTION } from "../output/SplitFormat.js";
+import { CODE_WIDTH, NONE_SHARED, PRICE_SEPARATOR, ROUTE_SEPARATOR, SECTION } from "../output/splitFormat.js";
 
 /**
  * The split journeys of one category as a tree per origin: each node is a station reached from its parent on a

@@ -1,5 +1,5 @@
-import { type FareIndex, isPrice, NO_PRICE, permittedKey } from "../fares/FareIndex.js";
-import { NO_CATEGORY } from "../fares/Category.js";
+import { type FareIndex, isPrice, NO_PRICE, permittedKey } from "../fares/fareIndex.js";
+import { NO_CATEGORY } from "../fares/category.js";
 
 /**
  * The cheapest fare in each category from one query location to each destination location, per route

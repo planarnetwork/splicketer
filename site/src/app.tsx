@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { type CategorySplit, Splits } from "./data/splits";
 import { Stations } from "./data/stations";
-import { MapView } from "./components/MapView";
-import { StationInput } from "./components/StationInput";
+import { MapView } from "./components/mapView";
+import { StationInput } from "./components/stationInput";
 import type { Theme } from "./theme/colors";
-import styles from "./App.module.css";
+import styles from "./app.module.css";
 
 const DATA = import.meta.env.BASE_URL;
 const SPLITS_URL = import.meta.env.VITE_SPLITS_URL ?? `${DATA}splits.br`;

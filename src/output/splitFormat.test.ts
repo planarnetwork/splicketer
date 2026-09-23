@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { FrontCoder, FrontDecoder } from "./SplitFormat.js";
+import { FrontCoder, FrontDecoder } from "./splitFormat.js";
 
 describe("FrontCoder", () => {
 

@@ -1,6 +1,6 @@
-import { CATEGORIES } from "../fares/Category.js";
-import { ROUTE_SEPARATOR, SECTION } from "./SplitFormat.js";
-import { type SplitSection, writeSplitFile } from "./SplitFile.js";
+import { CATEGORIES } from "../fares/category.js";
+import { ROUTE_SEPARATOR, SECTION } from "./splitFormat.js";
+import { type SplitSection, writeSplitFile } from "./splitFile.js";
 
 /**
  * Join split files built from contiguous runs of origins, given in the order of their origins, into one. Each

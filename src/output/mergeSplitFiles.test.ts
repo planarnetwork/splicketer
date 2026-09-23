@@ -3,7 +3,7 @@ import * as os from "node:os";
 import * as path from "node:path";
 import * as zlib from "node:zlib";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { codeBlock, writeSplitFile } from "./SplitFile.js";
+import { codeBlock, writeSplitFile } from "./splitFile.js";
 import { mergeSplitFiles } from "./mergeSplitFiles.js";
 
 describe("mergeSplitFiles", () => {

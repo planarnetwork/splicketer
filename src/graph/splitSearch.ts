@@ -1,7 +1,7 @@
 import type { RouteingNetwork } from "@gb-transit/routeing-source";
-import { ANY_PERMITTED } from "../fares/FareIndex.js";
-import type { NegativeEasement } from "../routeing/NegativeEasements.js";
-import { NO_FARE, type SplitFares } from "./FareMatrix.js";
+import { ANY_PERMITTED } from "../fares/fareIndex.js";
+import type { NegativeEasement } from "../routeing/negativeEasements.js";
+import { NO_FARE, type SplitFares } from "./fareMatrix.js";
 
 /**
  * The split journeys from one origin in one category, keyed by the route code their tickets are for
